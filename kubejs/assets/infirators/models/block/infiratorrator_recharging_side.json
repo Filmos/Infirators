@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_side",
+  "textures": {
+    "texture": "infirators:block/infiratorrator_recharging"
+  }
+}
