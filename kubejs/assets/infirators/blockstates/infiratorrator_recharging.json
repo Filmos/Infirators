@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "infirators:block/infiratorrator_recharging_post"
+      }
+    }
+  ]
+}

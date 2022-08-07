@@ -18,6 +18,7 @@ onEvent('block.registry', event => {
         .unbreakable()
         .displayName('InfiRatorRator')
         .jumpFactor(5)
+        .box(6, 0, 6, 10, 16, 10, true)
         .randomTick(tick => {
             if(tick.random.nextFloat() < 0.05) {
                 tick.block.set('infirators:infiratorrator')
