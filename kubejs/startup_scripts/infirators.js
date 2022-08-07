@@ -4,6 +4,7 @@ onEvent('block.registry', event => {
         .hardness(1)
         .displayName('InfiRator')
         .noDrops()
+        .speedFactor(1.5)
 
     event.create('infirators:infiratorrator', 'wall')
         .material('slime')
