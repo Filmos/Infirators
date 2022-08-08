@@ -9,6 +9,7 @@ function get_loottables(server) {
         return {
             "type": "loottable",
             "loottable": x,
+            "name": `Loot table ${x}`
     }})
 
     tagDict = {}
@@ -32,7 +33,8 @@ function get_loottables(server) {
         loottables.push({
             "type": "item",
             "amount": [1, 4],
-            "items": tagDict[tag]
+            "items": tagDict[tag],
+            "name": `Item tag ${tag}`
         })
     }
 
@@ -74,6 +76,21 @@ onEvent('block.break', event => {
             item_name = drops.items[Math.floor(Math.random()*drops.items.length)]
             item_count = Math.floor(Math.random()*(drops.amount[1] - drops.amount[0])) + drops.amount[0]
             event.server.runCommandSilent(`execute in ${event.block.dimension} run summon minecraft:item ${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z} {Item:{id:"${item_name}",Count:${item_count}b},Motion:[${Math.random()*0.2-0.1},${Math.random()*0.2+0.1},${Math.random()*0.2-0.1}]}`)
+        }
+    }
+})
+
+onEvent('block.right_click', event => {
+    if(event.block.id == "infirators:infirator") {
+        info = event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`]
+
+        if (!Object.keys(info).includes("name") && info["type"] == "loottable") {
+            info["name"] = `Loot table ${info["loottable"]}`
+            event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] = info
+        }
+
+        if (Object.keys(info).includes("name")) {
+            event.player.tell(Component.aqua(info["name"]))
         }
     }
 })
