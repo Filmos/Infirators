@@ -9,7 +9,8 @@ function get_loottables(server) {
         return {
             "type": "loottable",
             "loottable": x,
-            "name": `Loot table ${x}`
+            "name": `Loot table ${x}`,
+            "times": 1
     }})
 
     tagDict = {}
@@ -34,7 +35,8 @@ function get_loottables(server) {
             "type": "item",
             "amount": [1, 4],
             "items": tagDict[tag],
-            "name": `Item tag ${tag}`
+            "name": `Item tag ${tag}`,
+            "times": Math.floor(Math.sqrt(tagDict[tag].length))
         })
     }
 
@@ -69,13 +71,23 @@ onEvent('block.break', event => {
             }
             event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] = drops
         }
+        if (!Object.keys(drops).includes("times")) {
+            if(drops.type == "loottable") {
+                drops.times = 1
+            } else if (drops.type == "item") {
+                drops.times = Math.floor(Math.sqrt(drops.items.length))
+            }
+            event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] = drops
+        }
 
-        if(drops.type == "loottable") {
-            event.server.runCommandSilent(`execute in ${event.block.dimension} run loot spawn ${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z} loot ${drops.loottable}`)
-        } else if(drops.type == "item") {
-            item_name = drops.items[Math.floor(Math.random()*drops.items.length)]
-            item_count = Math.floor(Math.random()*(drops.amount[1] - drops.amount[0])) + drops.amount[0]
-            event.server.runCommandSilent(`execute in ${event.block.dimension} run summon minecraft:item ${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z} {Item:{id:"${item_name}",Count:${item_count}b},Motion:[${Math.random()*0.2-0.1},${Math.random()*0.2+0.1},${Math.random()*0.2-0.1}]}`)
+        for(let i=0; i<drops.times; i++) {
+            if(drops.type == "loottable") {
+                event.server.runCommandSilent(`execute in ${event.block.dimension} run loot spawn ${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z} loot ${drops.loottable}`)
+            } else if(drops.type == "item") {
+                item_name = drops.items[Math.floor(Math.random()*drops.items.length)]
+                item_count = Math.floor(Math.random()*(drops.amount[1] - drops.amount[0])) + drops.amount[0]
+                event.server.runCommandSilent(`execute in ${event.block.dimension} run summon minecraft:item ${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z} {Item:{id:"${item_name}",Count:${item_count}b},Motion:[${Math.random()*0.2-0.1},${Math.random()*0.2+0.1},${Math.random()*0.2-0.1}]}`)
+            }
         }
     }
 })
