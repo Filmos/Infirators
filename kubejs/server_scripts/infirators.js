@@ -14,16 +14,27 @@ function get_loottables(server) {
     }})
 
     tagDict = {}
+    wordDict = {}
     invalidItems = {}
     for(item of Item.list) {
         for(tag of item.tags) {
             if(tagDict[tag] == undefined)
                 tagDict[tag] = {items: [], max_stack: 4}
-            if(tagDict[tag].items.includes(item.id))
+            if(tagDict[tag].items.includes(item.id) || invalidItems[item.id] == true)
                 invalidItems[item.id] = true
             else
                 tagDict[tag].items.push(item.id)
                 tagDict[tag].max_stack = Math.min(item.getItem().maxStackSize, tagDict[tag].max_stack)
+        }
+
+        for(word of item.name.getString().split(" ")) {
+            if(wordDict[word] == undefined)
+                wordDict[word] = {items: [], max_stack: 4}
+            if(wordDict[word].items.includes(item.id) || invalidItems[item.id] == true)
+                invalidItems[item.id] = true
+            else
+                wordDict[word].items.push(item.id)
+                wordDict[word].max_stack = Math.min(item.getItem().maxStackSize, wordDict[word].max_stack)
         }
     }
     
@@ -38,6 +49,20 @@ function get_loottables(server) {
             "items": tagDict[tag].items,
             "name": `Item tag ${tag}`,
             "times": Math.floor(Math.sqrt(tagDict[tag].items.length))
+        })
+    }
+
+    for(word in wordDict) {
+        wordDict[word].items = wordDict[word].items.filter(x => !invalidItems[x])
+        if(wordDict[word].items.length <= 2 || wordDict[word].items.length > 20)
+            continue
+        
+        loottables.push({
+            "type": "item",
+            "amount": [1, wordDict[word].max_stack],
+            "items": wordDict[word].items,
+            "name": `Common word ${word}`,
+            "times": Math.floor(Math.sqrt(wordDict[word].items.length))
         })
     }
 

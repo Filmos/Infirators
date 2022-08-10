@@ -13,7 +13,6 @@ onEvent('block.registry', event => {
         .displayName('InfiRatorRator')
         .jumpFactor(5)
     
-
     event.create('infirators:infiratorrator_recharging')
         .material('slime')
         .unbreakable()
@@ -25,5 +24,4 @@ onEvent('block.registry', event => {
                 tick.block.set('infirators:infiratorrator')
             }
         })
-    
 })
