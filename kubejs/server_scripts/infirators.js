@@ -18,25 +18,26 @@ function get_loottables(server) {
     for(item of Item.list) {
         for(tag of item.tags) {
             if(tagDict[tag] == undefined)
-                tagDict[tag] = []
-            if(tagDict[tag].includes(item.id))
+                tagDict[tag] = {items: [], max_stack: 4}
+            if(tagDict[tag].items.includes(item.id))
                 invalidItems[item.id] = true
             else
-                tagDict[tag].push(item.id)
+                tagDict[tag].items.push(item.id)
+                tagDict[tag].max_stack = Math.min(item.getItem().maxStackSize, tagDict[tag].max_stack)
         }
     }
     
     for(tag in tagDict) {
-        tagDict[tag] = tagDict[tag].filter(x => !invalidItems[x])
-        if(tagDict[tag].length <= 1)
+        tagDict[tag].items = tagDict[tag].items.filter(x => !invalidItems[x])
+        if(tagDict[tag].items.length <= 1)
             continue
         
         loottables.push({
             "type": "item",
-            "amount": [1, 4],
-            "items": tagDict[tag],
+            "amount": [1, tagDict[tag].max_stack],
+            "items": tagDict[tag].items,
             "name": `Item tag ${tag}`,
-            "times": Math.floor(Math.sqrt(tagDict[tag].length))
+            "times": Math.floor(Math.sqrt(tagDict[tag].items.length))
         })
     }
 
