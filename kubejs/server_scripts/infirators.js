@@ -25,6 +25,8 @@ function get_loottables(server) {
     wordDict = {}
     invalidItems = {}
     for(item of Item.list) {
+        if(`${item.getMod()}` == "infirators")
+            continue
         for(tag of item.tags) {
             if(tagDict[tag] == undefined)
                 tagDict[tag] = {items: [], max_stack: 4}
