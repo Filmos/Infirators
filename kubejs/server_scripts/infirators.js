@@ -69,7 +69,7 @@ function get_loottables(server) {
             "type": "item",
             "amount": [1, wordDict[word].max_stack],
             "items": wordDict[word].items,
-            "name": `Common word ${word}`,
+            "name": `Common word "${word}"`,
             "times": Math.floor(Math.sqrt(wordDict[word].items.length))
         })
     }
@@ -77,14 +77,24 @@ function get_loottables(server) {
     loottables_cache = loottables
     return loottables
 }
+function get_random_loottable(server) {
+    loottables = get_loottables(server)
+    return loottables[Math.floor(Math.random() * loottables.length)]
+}
+function set_to_random_loottable(server, block) {
+    loottable = get_random_loottable(server)
+    if(server.persistentData[block.dimension]["infirators"] == undefined)
+        server.persistentData[block.dimension]["infirators"] = {}
+    server.persistentData[block.dimension]["infirators"][`${block.pos.x} ${block.pos.y} ${block.pos.z}`] = loottable
+}
+
+onEvent('server.datapack.last', event => {
+    get_loottables(event.server)
+})
 
 onEvent('block.place', event => {
-    if(event.block.id == "infirators:infirator") {
-        loottables = get_loottables(event.server)
-        if(event.server.persistentData[event.block.dimension]["infirators"] == undefined)
-            event.server.persistentData[event.block.dimension]["infirators"] = {}
-        event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] = loottables[Math.floor(Math.random()*loottables.length)]
-    }
+    if(event.block.id == "infirators:infirator") 
+        set_to_random_loottable(event.server, event.block)
 })
 
 onEvent('block.break', event => {
@@ -94,7 +104,11 @@ onEvent('block.break', event => {
         })
     }
 
-    if(event.block.id == "infirators:infirator") {
+    if(event.block.id.indexOf("infirators:infirotator")==0 && (event.server.persistentData[event.block.dimension]["infirators"] == undefined || event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] == undefined)) {
+        set_to_random_loottable(event.server, event.block)
+    }
+
+    if(event.block.id == "infirators:infirator" || event.block.id.indexOf("infirators:infirotator")==0) {
         event.cancel()
         drops = event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`]
 
