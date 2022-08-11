@@ -5,7 +5,15 @@ function get_loottables(server) {
         return loottables_cache
     }
 
-    loottables = server.getMinecraftServer().m_129898_().getIds().stream().map(rl => `${rl}`).filter(x => !x.match(/^[^:]+:blocks\//i)).toList().map(x => {
+    loottables = server.getMinecraftServer().m_129898_().getIds().stream().map(rl => `${rl}`).filter(x => !x.match(/^[^:]+:blocks\//i)).filter(x => {
+        for(let i=0; i<15; i++) {
+            loot = Utils.rollChestLoot(x)
+            for(l of loot) {
+                if(`${l}` != "Item.empty") return true
+            }
+        }
+        return false
+    }).toList().map(x => {
         return {
             "type": "loottable",
             "loottable": x,
@@ -54,7 +62,7 @@ function get_loottables(server) {
 
     for(word in wordDict) {
         wordDict[word].items = wordDict[word].items.filter(x => !invalidItems[x])
-        if(wordDict[word].items.length <= 2 || wordDict[word].items.length > 20)
+        if(wordDict[word].items.length <= 2 || wordDict[word].items.length > 30)
             continue
         
         loottables.push({
@@ -71,8 +79,8 @@ function get_loottables(server) {
 }
 
 onEvent('block.place', event => {
-    loottables = get_loottables(event.server)
     if(event.block.id == "infirators:infirator") {
+        loottables = get_loottables(event.server)
         if(event.server.persistentData[event.block.dimension]["infirators"] == undefined)
             event.server.persistentData[event.block.dimension]["infirators"] = {}
         event.server.persistentData[event.block.dimension]["infirators"][`${event.block.pos.x} ${event.block.pos.y} ${event.block.pos.z}`] = loottables[Math.floor(Math.random()*loottables.length)]
