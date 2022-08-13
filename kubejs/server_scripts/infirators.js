@@ -1,19 +1,27 @@
 var loottables_cache = undefined
 
+function check_if_loottable_is_empty(loottable) {
+    // TODO: fix Wrapped java.util.NoSuchElementException: minecraft:this_entity
+
+    if(loottable.indexOf("tombstone:") == 0) return true
+    for(let i=0; i<15; i++) {
+        loot = Utils.rollChestLoot(loottable)
+        for(l of loot) {
+            if(`${l}` != "Item.empty") return false
+        }
+    }
+    return true
+}
 function get_loottables(server) {
     if(loottables_cache !== undefined) {
         return loottables_cache
     }
 
-    loottables = server.getMinecraftServer().m_129898_().getIds().stream().map(rl => `${rl}`).filter(x => !x.match(/^[^:]+:blocks\//i)).filter(x => {
-        for(let i=0; i<15; i++) {
-            loot = Utils.rollChestLoot(x)
-            for(l of loot) {
-                if(`${l}` != "Item.empty") return true
-            }
-        }
-        return false
-    }).toList().map(x => {
+    loottables = server.getMinecraftServer().m_129898_().getIds().stream()
+    .map(rl => `${rl}`)
+    .filter(x => !x.match(/^[^:]+:blocks\//i))
+    .filter(x => !check_if_loottable_is_empty(x))
+    .toList().map(x => {
         return {
             "type": "loottable",
             "loottable": x,
