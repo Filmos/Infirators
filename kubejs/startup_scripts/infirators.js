@@ -63,4 +63,22 @@ onEvent('block.registry', event => {
                 }
             })
     }
+
+    create_block_base(event, 'InfiRecreator')
+        .hardness(1)
+        .randomTick(tick => {
+            if(tick.random.nextFloat() < 0.05) {
+                let spread_position = [tick.block.down, tick.block.north, tick.block.south, tick.block.west, tick.block.east, tick.block.up]
+                for(let position of spread_position) {
+                    if(position.id != 'infirators:infirecreator' && position.id != 'infirators:infirecreator_dead') {
+                        position.set('infirators:infirecreator')
+                        return
+                    }
+                }
+                tick.block.set('infirators:infirecreator_dead')
+            }
+        })
+
+    create_block_base(event, 'InfiRecreator_dead')
+        .unbreakable()
 })

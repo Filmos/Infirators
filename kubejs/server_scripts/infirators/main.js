@@ -8,6 +8,8 @@ base.copy_for("infirators:infirator")
     .assign_when_placed()
 base.copy_for(["down", "up", "north", "south", "west", "east"].map(dir => `infirators:infirotator_${dir}`))
     .assign_when_needed()
+base.copy_for("infirators:infirecreator")
+    .assign_when_needed()
 
 LogicBinder.for("infirators:infiratorrator")
            .transform_to("infirators:infiratorrator_recharging")
