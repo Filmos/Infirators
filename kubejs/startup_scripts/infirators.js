@@ -1,23 +1,42 @@
+function create_block_base(event, name, type) {
+    let display_name = name.split('_')[0]
+    let coloring_regexes = [
+        /^(Infi)(.*)(Rator)$/,
+        /^(InfiRa)(.*)(tor)$/,
+        /^(InfiRato)(.*)(r)$/,
+        /^(InfiRat)(.*)(or)$/,
+        /^(InfiR)(.*)(ator)$/,
+    ]
+    let matched_coloring = undefined
+    for(let coloring_regex of coloring_regexes) {
+        if(coloring_regex.test(display_name)) {
+            matched_coloring = coloring_regex.exec(display_name)
+            break
+        }
+    }
+    if(matched_coloring != undefined)
+        display_name = matched_coloring[1] + '§8' + matched_coloring[2] + '§r' + matched_coloring[3]
+
+    if(type == undefined) type = "basic"
+    return event.create('infirators:' + name.toLowerCase(), type)
+                .material('slime')
+                .resistance(999999)
+                .displayName(display_name)
+}
+
 onEvent('block.registry', event => {
-    event.create('infirators:infirator', 'stone_button')
-        .material('slime')
+    create_block_base(event, 'InfiRator', 'stone_button')
         .hardness(1)
-        .resistance(999999)
-        .displayName('InfiRator')
         .noDrops()
         .speedFactor(1.5)
 
-    event.create('infirators:infiratorrator', 'wall')
-        .material('slime')
+    create_block_base(event, 'InfiRatorRator', 'wall')
         .hardness(8)
-        .resistance(999999)
-        .displayName('InfiRatorRator')
         .jumpFactor(5)
+
     
-    event.create('infirators:infiratorrator_recharging')
-        .material('slime')
+    create_block_base(event, 'InfiRatorRator_recharging')
         .unbreakable()
-        .displayName('InfiRatorRator')
         .jumpFactor(5)
         .box(6, 0, 6, 10, 16, 10, true)
         .randomTick(tick => {
@@ -25,14 +44,12 @@ onEvent('block.registry', event => {
                 tick.block.set('infirators:infiratorrator')
             }
         })
+    
 
 
     for(let inf of [["down", [0, 0, 0, 16, 8, 16]], ["up", [0, 8, 0, 16, 16, 16]], ["north", [0, 0, 0, 16, 16, 8]], ["south", [0, 0, 8, 16, 16, 16]], ["west", [0, 0, 0, 8, 16, 16]], ["east", [8, 0, 0, 16, 16, 16]]]) {
-        event.create('infirators:infirotator_'+inf[0])
-            .material('slime')
+        create_block_base(event, 'InfiRotator_'+inf[0])
             .hardness(1)
-            .resistance(999999)
-            .displayName('InfiRotator')
             .noDrops()
             .box(inf[1][0], inf[1][1], inf[1][2], inf[1][3], inf[1][4], inf[1][5], true)
             .speedFactor(0)
